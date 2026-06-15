@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,1283 +11,16 @@
   <!-- Swiper -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet" />
 
-  <style>
-    /* ============================================================
-       TOKENS & RESET
-    ============================================================ */
-    :root {
-      --cream:       #f5f0e8;
-      --cream-deep:  #ede7d9;
-      --ink:         #1a1208;
-      --ink-soft:    #2c2415;
-      --rose:        #e8472a;
-      --rose-deep:   #c33a20;
-      --gold:        #c9972a;
-      --gold-light:  #e8b84b;
-      --card-bg:     #edeae0;
-      --muted:       #8a7e6e;
-      --muted-light: #b5a99a;
-      --glass:       rgba(245,240,232,0.72);
-      --glass-dark:  rgba(26,18,8,0.65);
+  <!--* CUSTOM CSS LINK -->
+  <link rel="stylesheet" href="./style.css">
 
-      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-in-out:   cubic-bezier(0.76, 0, 0.24, 1);
-    }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: auto; font-size: 16px; }
-
-    body {
-      background: var(--cream);
-      color: var(--ink);
-      font-family: 'Syne', sans-serif;
-      overflow-x: hidden;
-      cursor: none;
-    }
-
-    img { display: block; max-width: 100%; }
-    a { color: inherit; }
-
-    /* ============================================================
-       SCROLL PROGRESS
-    ============================================================ */
-    #scroll-progress {
-      position: fixed; top: 0; left: 0;
-      height: 2px; width: 0%;
-      background: linear-gradient(90deg, var(--rose), var(--gold));
-      z-index: 9999;
-      transition: width 0.1s linear;
-    }
-
-    /* ============================================================
-       LOADER
-    ============================================================ */
-    #loader {
-      position: fixed; inset: 0;
-      background: var(--ink);
-      z-index: 10000;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      gap: 24px;
-    }
-    .loader-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 64px; font-weight: 900; font-style: italic;
-      color: var(--cream);
-      opacity: 0;
-      transform: translateY(20px);
-      animation: loaderIn 0.6s var(--ease-out-expo) 0.2s forwards;
-    }
-    .loader-logo span { color: var(--rose); }
-    .loader-bar-wrap {
-      width: 160px; height: 1px;
-      background: rgba(255,255,255,0.1);
-      overflow: hidden;
-    }
-    .loader-bar {
-      height: 100%;
-      background: var(--rose);
-      animation: loaderBar 1.4s var(--ease-in-out) 0.4s forwards;
-      width: 0;
-    }
-    @keyframes loaderIn {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes loaderBar {
-      to { width: 100%; }
-    }
-
-    /* ============================================================
-       CUSTOM CURSOR
-    ============================================================ */
-    #cursor-dot {
-      width: 8px; height: 8px;
-      background: var(--rose);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: transform 0.08s ease, width 0.25s var(--ease-out-expo), height 0.25s var(--ease-out-expo), background 0.2s;
-      will-change: left, top;
-    }
-    #cursor-ring {
-      width: 40px; height: 40px;
-      border: 1.5px solid var(--rose);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9997;
-      transform: translate(-50%, -50%);
-      transition: left 0.14s var(--ease-out-expo), top 0.14s var(--ease-out-expo),
-                  width 0.35s var(--ease-out-expo), height 0.35s var(--ease-out-expo),
-                  opacity 0.3s, border-color 0.2s;
-      opacity: 0.5;
-      will-change: left, top;
-    }
-    body.cursor-hover #cursor-dot { width: 6px; height: 6px; }
-    body.cursor-hover #cursor-ring {
-      width: 64px; height: 64px;
-      opacity: 1; border-color: var(--gold);
-    }
-    body.cursor-click #cursor-dot {
-      transform: translate(-50%, -50%) scale(0.6);
-      background: var(--gold);
-    }
-
-    /* ============================================================
-       GRAIN OVERLAY
-    ============================================================ */
-    .grain {
-      position: absolute; inset: 0; pointer-events: none; z-index: 1;
-      opacity: 0.035;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      background-repeat: repeat;
-      background-size: 128px;
-    }
-
-    /* ============================================================
-       NAV
-    ============================================================ */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 28px 64px;
-      z-index: 500;
-      transition: padding 0.4s var(--ease-out-expo), background 0.4s, backdrop-filter 0.4s;
-    }
-    nav.scrolled {
-      padding: 16px 64px;
-      background: var(--glass);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-bottom: 1px solid rgba(26,18,8,0.08);
-    }
-    .nav-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px; font-weight: 900; font-style: italic;
-      color: var(--ink); letter-spacing: -0.02em;
-      text-decoration: none;
-    }
-    .nav-logo span { color: var(--rose); }
-    .nav-links { display: flex; gap: 40px; list-style: none; }
-    .nav-links a {
-      text-decoration: none;
-      font-size: 11px; font-weight: 700;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--ink);
-      position: relative; padding-bottom: 4px;
-    }
-    .nav-links a::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0;
-      width: 0; height: 1.5px;
-      background: var(--rose);
-      transition: width 0.35s var(--ease-out-expo);
-    }
-    .nav-links a:hover::after,
-    .nav-links a.active::after { width: 100%; }
-    .nav-links a.active { color: var(--rose); }
-
-    .nav-cta {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; text-decoration: none;
-      padding: 10px 22px;
-      border: 1.5px solid var(--ink);
-      color: var(--ink);
-      transition: background 0.25s, color 0.25s, border-color 0.25s;
-    }
-    .nav-cta:hover { background: var(--rose); color: #fff; border-color: var(--rose); }
-
-    /* ============================================================
-       HERO
-    ============================================================ */
-    #hero {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      position: relative; overflow: hidden;
-    }
-
-    .hero-left {
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 160px 60px 80px 64px;
-      position: relative; z-index: 2;
-    }
-
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--rose);
-      margin-bottom: 36px; overflow: hidden;
-    }
-    .hero-tag-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--rose);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.7); }
-    }
-
-    .hero-name {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(62px, 7.5vw, 108px);
-      font-weight: 900;
-      line-height: 0.9;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 10px;
-      overflow: hidden;
-    }
-    .hero-name .line { display: block; overflow: hidden; }
-    .hero-name em { font-style: italic; color: var(--rose); }
-    .hero-subtitle {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(18px, 2.2vw, 28px);
-      font-style: italic; font-weight: 400;
-      color: var(--muted);
-      margin-bottom: 32px;
-      overflow: hidden;
-    }
-
-    .hero-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px; line-height: 1.75;
-      color: var(--muted);
-      max-width: 360px; margin-bottom: 52px;
-    }
-
-    .hero-actions {
-      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-      margin-bottom: 64px;
-    }
-
-    /* Magnetic button wrapper */
-    .mag-btn-wrap { position: relative; display: inline-block; }
-
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 14px;
-      background: var(--ink); color: var(--cream);
-      padding: 16px 34px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
-      text-transform: uppercase; text-decoration: none;
-      border: 2px solid var(--ink);
-      position: relative; overflow: hidden;
-      transition: color 0.3s, border-color 0.3s;
-    }
-    .btn-primary::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: var(--rose);
-      transform: translateX(-101%);
-      transition: transform 0.4s var(--ease-out-expo);
-    }
-    .btn-primary:hover::before { transform: translateX(0); }
-    .btn-primary:hover { border-color: var(--rose); }
-    .btn-primary span, .btn-primary svg { position: relative; z-index: 1; }
-
-    .btn-secondary {
-      display: inline-flex; align-items: center; gap: 10px;
-      color: var(--ink); text-decoration: none;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 16px 28px;
-      border: 2px solid rgba(26,18,8,0.25);
-      transition: border-color 0.3s, color 0.3s;
-    }
-    .btn-secondary:hover { border-color: var(--ink); color: var(--rose); }
-
-    .btn-arrow {
-      width: 18px; height: 1.5px; background: currentColor;
-      position: relative; transition: width 0.3s;
-      flex-shrink: 0;
-    }
-    .btn-arrow::after {
-      content: ''; position: absolute; right: 0; top: 50%;
-      transform: translateY(-50%) rotate(45deg);
-      width: 6px; height: 6px;
-      border-top: 1.5px solid currentColor;
-      border-right: 1.5px solid currentColor;
-    }
-    .btn-primary:hover .btn-arrow,
-    .btn-secondary:hover .btn-arrow { width: 26px; }
-
-    .hero-stats {
-      display: flex; gap: 40px;
-    }
-    .hero-stat { }
-    .hero-stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 36px; font-weight: 900;
-      color: var(--ink); line-height: 1;
-    }
-    .hero-stat-num span { color: var(--rose); }
-    .hero-stat-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.15em;
-      text-transform: uppercase; color: var(--muted);
-      margin-top: 4px;
-    }
-
-    /* HERO RIGHT */
-    .hero-right {
-      position: relative; background: var(--ink);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .hero-bg-letter {
-      font-family: 'Playfair Display', serif;
-      font-size: 56vw; font-weight: 900; font-style: italic;
-      color: rgba(255,255,255,0.025);
-      position: absolute;
-      line-height: 0.8;
-      user-select: none; pointer-events: none;
-      animation: heroLetterFloat 8s ease-in-out infinite;
-    }
-    @keyframes heroLetterFloat {
-      0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50% { transform: translateY(-20px) rotate(0deg); }
-    }
-
-    .hero-img-wrap {
-      position: relative; z-index: 2;
-      width: 300px;
-      animation: heroImgFloat 6s ease-in-out infinite;
-    }
-    @keyframes heroImgFloat {
-      0%, 100% { transform: translateY(0) rotate(-1deg); }
-      50% { transform: translateY(-16px) rotate(1deg); }
-    }
-    .hero-img-frame {
-      position: relative;
-      border: 1px solid rgba(255,255,255,0.12);
-      overflow: hidden;
-    }
-    .hero-img-frame img {
-      width: 100%;
-      aspect-ratio: 3/4;
-      object-fit: cover;
-      display: block;
-      filter: grayscale(15%) contrast(1.05);
-    }
-    .hero-img-glow {
-      position: absolute; inset: -40px;
-      background: radial-gradient(circle at 50% 60%, rgba(232,71,42,0.25) 0%, transparent 70%);
-      pointer-events: none;
-      animation: glowPulse 4s ease-in-out infinite;
-    }
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-    .hero-img-label {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      background: var(--rose);
-      padding: 12px 18px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .hero-img-label span {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.2em;
-      text-transform: uppercase; color: #fff;
-    }
-
-    .hero-scroll-hint {
-      position: absolute; bottom: 40px; left: 64px;
-      display: flex; align-items: center; gap: 14px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--muted); z-index: 2;
-    }
-    .scroll-line {
-      width: 48px; height: 1px; background: var(--muted);
-      animation: scrollLineAnim 2.2s ease-in-out infinite;
-    }
-    @keyframes scrollLineAnim {
-      0%, 100% { width: 48px; opacity: 1; }
-      50% { width: 20px; opacity: 0.35; }
-    }
-
-    /* ============================================================
-       MARQUEE
-    ============================================================ */
-    .marquee-section {
-      background: var(--ink); padding: 18px 0;
-      overflow: hidden; white-space: nowrap;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .marquee-track {
-      display: inline-flex; align-items: center;
-      animation: marqueeScroll 22s linear infinite;
-      will-change: transform;
-    }
-    .marquee-track:hover { animation-play-state: paused; }
-    .marquee-track .item {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
-      text-transform: uppercase; color: rgba(245,240,232,0.5);
-      padding: 0 28px;
-      transition: color 0.2s;
-    }
-    .marquee-track .item:hover { color: var(--gold); }
-    .marquee-dot {
-      color: var(--rose); font-size: 14px; flex-shrink: 0;
-    }
-    @keyframes marqueeScroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
-
-    /* ============================================================
-       SECTION UTILITIES
-    ============================================================ */
-    .section-eyebrow {
-      display: inline-flex; align-items: center; gap: 12px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--rose);
-      margin-bottom: 20px;
-    }
-    .section-eyebrow::before {
-      content: ''; width: 28px; height: 1.5px; background: var(--rose);
-    }
-    .section-h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(38px, 5vw, 64px);
-      font-weight: 900; line-height: 0.95;
-      letter-spacing: -0.025em;
-    }
-    .section-h2 em { font-style: italic; color: var(--gold); }
-
-    /* Reveal */
-    [data-reveal] {
-      opacity: 0;
-      transform: translateY(48px);
-      transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
-    }
-    [data-reveal="left"] { transform: translateX(-48px); }
-    [data-reveal="right"] { transform: translateX(48px); }
-    [data-reveal="scale"] { transform: scale(0.92); }
-    [data-reveal].revealed {
-      opacity: 1; transform: none;
-    }
-
-    /* ============================================================
-       WORK / PROJECTS
-    ============================================================ */
-    #work { padding: 120px 64px; }
-
-    .work-header {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      margin-bottom: 72px;
-    }
-    .work-count {
-      font-family: 'Playfair Display', serif;
-      font-size: 96px; font-weight: 900;
-      color: rgba(26,18,8,0.05); line-height: 1;
-    }
-
-    /* BENTO GRID */
-    .bento-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      grid-auto-rows: 80px;
-      gap: 16px;
-    }
-
-    .bento-card {
-      background: var(--card-bg);
-      overflow: hidden;
-      position: relative;
-      cursor: none;
-      transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s;
-    }
-    .bento-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 24px 64px rgba(26,18,8,0.12);
-    }
-
-    /* Grid placements */
-    .bento-1 { grid-column: span 7; grid-row: span 6; }
-    .bento-2 { grid-column: span 5; grid-row: span 4; }
-    .bento-3 { grid-column: span 5; grid-row: span 2; }
-    .bento-4 { grid-column: span 4; grid-row: span 4; }
-    .bento-5 { grid-column: span 4; grid-row: span 4; }
-    .bento-6 { grid-column: span 4; grid-row: span 4; }
-
-    .bento-thumb {
-      width: 100%; height: 65%;
-      overflow: hidden; position: relative;
-    }
-    .bento-1 .bento-thumb { height: 72%; }
-    .bento-2 .bento-thumb { height: 68%; }
-
-    .bento-thumb img {
-      width: 100%; height: 100%;
-      object-fit: inherit;
-      transition: transform 0.6s var(--ease-out-expo);
-    }
-    .bento-card:hover .bento-thumb img { transform: scale(1.05); }
-
-    .bento-thumb-placeholder {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 64px; font-weight: 900; font-style: italic;
-      transition: transform 0.6s var(--ease-out-expo);
-    }
-    .bento-card:hover .bento-thumb-placeholder { transform: scale(1.05); }
-
-    .btp-1 { background: linear-gradient(135deg, #1a1208, #3d2b10); color: rgba(201,151,42,0.25); }
-    .btp-2 { background: linear-gradient(135deg, #2d1810, #1a0a08); color: rgba(232,71,42,0.2); }
-    .btp-3 { background: linear-gradient(135deg, #0d1a0d, #1a2d1a); color: rgba(34,100,34,0.3); }
-
-    .bento-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(26,18,8,0.6) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity 0.35s;
-    }
-    .bento-card:hover .bento-overlay { opacity: 1; }
-
-    .bento-info { padding: 20px 24px 24px; }
-    .bento-cat {
-      font-size: 9px; font-weight: 700; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--rose); margin-bottom: 6px;
-    }
-    .bento-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px; font-weight: 700;
-      letter-spacing: -0.01em; color: var(--ink);
-      margin-bottom: 6px; line-height: 1.2;
-    }
-    .bento-1 .bento-title { font-size: 26px; }
-    .bento-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px; color: var(--muted); line-height: 1.6;
-    }
-    .bento-tags {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
-    }
-    .bento-tag {
-      font-size: 9px; font-weight: 700; letter-spacing: 0.15em;
-      text-transform: uppercase; color: var(--muted);
-      padding: 4px 10px;
-      border: 1px solid rgba(26,18,8,0.15);
-    }
-    .bento-link {
-      display: inline-flex; align-items: center; gap: 8px;
-      margin-top: 14px; font-size: 10px; font-weight: 700;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--rose); text-decoration: none;
-    }
-    .bento-link:hover .btn-arrow { width: 22px; }
-
-    /* ============================================================
-       CREATIVES CAROUSEL
-    ============================================================ */
-    #creatives { padding: 100px 0; background: var(--ink); }
-
-    .creatives-header {
-      padding: 0 64px 56px;
-    }
-    .creatives-header .section-eyebrow { color: var(--gold); }
-    .creatives-header .section-eyebrow::before { background: var(--gold); }
-    .creatives-header .section-h2 { color: var(--cream); }
-
-    .swiper-creatives {
-      padding: 20px 0 60px !important;
-    }
-    .swiper-creatives .swiper-slide {
-      width: 380px;
-      cursor: none;
-    }
-    .creative-slide-inner {
-      position: relative; overflow: hidden;
-      aspect-ratio: 3/4;
-    }
-    .creative-slide-inner img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s var(--ease-out-expo);
-    }
-    .swiper-slide-active .creative-slide-inner img,
-    .swiper-slide-active .creative-slide-inner { transform: none; }
-    .swiper-slide:not(.swiper-slide-active) .creative-slide-inner {
-      transform: scale(0.9);
-      transition: transform 0.6s var(--ease-out-expo);
-    }
-    .swiper-slide-active .creative-slide-inner {
-      transform: scale(1);
-    }
-
-    .creative-num {
-      position: absolute; top: 16px; left: 16px;
-      font-family: 'Playfair Display', serif;
-      font-size: 11px; font-weight: 700; font-style: italic;
-      color: rgba(255,255,255,0.5);
-      background: rgba(0,0,0,0.3);
-      padding: 4px 10px;
-    }
-    .swiper-nav-btns {
-      display: flex; gap: 12px; padding: 0 64px;
-    }
-    .swiper-btn {
-      width: 48px; height: 48px;
-      border: 1.5px solid rgba(255,255,255,0.2);
-      background: transparent;
-      display: flex; align-items: center; justify-content: center;
-      cursor: none; color: var(--cream);
-      transition: background 0.25s, border-color 0.25s;
-    }
-    .swiper-btn:hover { background: var(--rose); border-color: var(--rose); }
-    .swiper-btn svg { width: 18px; height: 18px; }
-
-    .swiper-creatives .swiper-pagination-bullet {
-      background: rgba(255,255,255,0.3); opacity: 1;
-    }
-    .swiper-creatives .swiper-pagination-bullet-active {
-      background: var(--rose);
-    }
-
-    /* ============================================================
-       PDF CASE STUDIES
-    ============================================================ */
-    #case-studies { padding: 120px 64px; }
-
-    .pdf-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 64px;
-    }
-
-    .pdf-card {
-      background: var(--card-bg);
-      overflow: hidden;
-      cursor: none;
-      transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s;
-      position: relative;
-    }
-    .pdf-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 24px 56px rgba(26,18,8,0.1);
-    }
-
-    .pdf-thumb {
-      height: 220px;
-      position: relative; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .pdf-thumb-bg {
-      position: absolute; inset: 0;
-    }
-    .ptb-1 { background: linear-gradient(135deg, #1a1208, #3d2510); }
-    .ptb-2 { background: linear-gradient(135deg, #0d1520, #1a2840); }
-    .ptb-3 { background: linear-gradient(135deg, #1a0808, #2d1010); }
-
-    .pdf-icon {
-      position: relative; z-index: 1;
-      width: 56px; height: 72px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 6px;
-    }
-    .pdf-icon svg { width: 24px; height: 24px; color: rgba(255,255,255,0.8); }
-    .pdf-icon-text {
-      font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
-      color: rgba(255,255,255,0.5);
-    }
-
-    .pdf-pages-badge {
-      position: absolute; top: 12px; right: 12px;
-      background: var(--rose); color: #fff;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
-      padding: 4px 10px;
-    }
-
-    .pdf-info { padding: 24px 26px 28px; }
-    .pdf-cat {
-      font-size: 9px; font-weight: 700; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--rose); margin-bottom: 8px;
-    }
-    .pdf-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px; font-weight: 700;
-      letter-spacing: -0.01em; color: var(--ink); margin-bottom: 8px;
-    }
-    .pdf-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px; color: var(--muted); line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .pdf-open-btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--ink); color: var(--cream);
-      padding: 12px 22px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; text-decoration: none;
-      transition: background 0.25s;
-      border: none; cursor: none;
-    }
-    .pdf-open-btn:hover { background: var(--rose); }
-
-    /* ============================================================
-       BLOG / DESIGN JOURNAL
-    ============================================================ */
-    #blog { padding: 120px 64px; background: var(--cream-deep); }
-
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr) ;
-      gap: 24px;
-      margin-top: 64px;
-    }
-    .blog-card {
-      background: var(--cream);
-      overflow: hidden;
-      cursor: none;
-      transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s;
-    }
-    .blog-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 48px rgba(26,18,8,0.1);
-    }
-    .blog-thumb {
-      height: 220px; overflow: hidden; position: relative;
-    }
-    .blog-thumb img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s var(--ease-out-expo);
-    }
-    .blog-card:hover .blog-thumb img { transform: scale(1.06); }
-    .blog-thumb-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(26,18,8,0.4) 0%, transparent 60%);
-    }
-    .blog-read-time {
-      position: absolute; top: 12px; right: 12px;
-      background: var(--rose); color: #fff;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
-      padding: 4px 10px;
-    }
-    .blog-info { padding: 24px 26px 28px; }
-    .blog-cat {
-      font-size: 9px; font-weight: 700; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
-    }
-    .blog-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px; font-weight: 700; letter-spacing: -0.01em;
-      color: var(--ink); margin-bottom: 8px; line-height: 1.25;
-    }
-    .blog-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px; color: var(--muted); line-height: 1.6;
-      margin-bottom: 18px;
-    }
-    .blog-more {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--ink); text-decoration: none;
-    }
-    .blog-more:hover { color: var(--rose); }
-    .blog-more:hover .btn-arrow { width: 22px; }
-
-    /* ============================================================
-       ABOUT
-    ============================================================ */
-    #about {
-      padding: 120px 64px;
-      background: var(--ink); color: var(--cream);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px; align-items: center;
-      position: relative; overflow: hidden;
-    }
-    #about .grain { opacity: 0.025; }
-    #about .section-eyebrow { color: var(--gold); }
-    #about .section-eyebrow::before { background: var(--gold); }
-    #about .section-h2 { color: var(--cream); }
-    #about .section-h2 em { color: var(--rose); }
-
-    .about-body {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px; line-height: 1.85;
-      color: rgba(245,240,232,0.6);
-      margin-top: 28px;
-    }
-    .about-body strong { color: var(--cream); }
-
-    /* Timeline */
-    .timeline { margin-top: 48px; }
-    .timeline-item {
-      display: flex; align-items: flex-start; gap: 20px;
-      padding: 20px 0;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .timeline-year {
-      font-family: 'Playfair Display', serif;
-      font-size: 13px; font-weight: 700; font-style: italic;
-      color: var(--rose); min-width: 48px;
-      padding-top: 2px;
-    }
-    .timeline-text {
-      font-size: 14px; color: rgba(245,240,232,0.65); line-height: 1.6;
-    }
-    .timeline-text strong { color: var(--cream); font-weight: 600; }
-
-    .about-right { position: relative; }
-    .about-portrait-wrap {
-      position: relative;
-    }
-    .about-portrait {
-      width: 100%;
-      aspect-ratio: 3/4;
-      overflow: hidden;
-      position: relative;
-    }
-    .about-portrait img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      filter: grayscale(20%) contrast(1.05);
-      transition: filter 0.5s;
-    }
-    .about-portrait:hover img { filter: none; }
-    .about-portrait-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(26,18,8,0.5) 0%, transparent 50%);
-    }
-    .about-float-tag {
-      position: absolute; bottom: -18px; right: -18px;
-      background: var(--rose); padding: 20px 22px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; color: #fff; line-height: 1.6;
-      z-index: 2;
-    }
-
-    .about-stats-row {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 1px; margin-top: 64px;
-    }
-    .a-stat {
-      background: rgba(255,255,255,0.04);
-      padding: 28px 24px;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    .a-stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 48px; font-weight: 900;
-      color: var(--rose); line-height: 1; margin-bottom: 6px;
-    }
-    .a-stat-label {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; color: rgba(245,240,232,0.35);
-    }
-
-    /* ============================================================
-       SKILLS
-    ============================================================ */
-    #skills { padding: 120px 64px; }
-
-    .skills-layout {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 80px; align-items: start;
-      margin-top: 64px;
-    }
-    .skills-intro-text {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px; line-height: 1.8; color: var(--muted);
-    }
-
-    .skills-cards {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 2px;
-    }
-    .skill-card {
-      background: var(--card-bg);
-      padding: 28px 24px;
-      position: relative; overflow: hidden;
-      cursor: none;
-      transition: background 0.3s var(--ease-out-expo);
-    }
-    .skill-card::before {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 0;
-      background: var(--rose);
-      transition: height 0.4s var(--ease-out-expo);
-    }
-    .skill-card:hover { background: var(--ink); }
-    .skill-card:hover::before { height: 3px; }
-
-    .skill-card-icon {
-      font-size: 24px; margin-bottom: 14px;
-    }
-    .skill-card-name {
-      font-size: 15px; font-weight: 700; letter-spacing: 0.02em;
-      color: var(--ink); margin-bottom: 14px;
-      transition: color 0.3s;
-    }
-    .skill-card:hover .skill-card-name { color: var(--cream); }
-
-    .skill-bar-track {
-      width: 100%; height: 2px;
-      background: rgba(26,18,8,0.1); margin-bottom: 10px;
-      transition: background 0.3s;
-    }
-    .skill-card:hover .skill-bar-track { background: rgba(255,255,255,0.1); }
-
-    .skill-bar-fill {
-      height: 100%;
-      background: var(--gold);
-      width: 0;
-      transition: width 1.2s var(--ease-out-expo), background 0.3s;
-    }
-    .skill-card:hover .skill-bar-fill { background: var(--rose); }
-    .skill-pct {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-      color: var(--muted); transition: color 0.3s;
-    }
-    .skill-card:hover .skill-pct { color: rgba(245,240,232,0.5); }
-
-    /* ============================================================
-       PROCESS
-    ============================================================ */
-    #process { padding: 120px 0; background: var(--cream-deep); overflow: hidden; }
-
-    .process-header { padding: 0 64px 64px; }
-
-    .process-track {
-      display: flex; gap: 0;
-      will-change: transform;
-    }
-    .process-step {
-      flex-shrink: 0;
-      width: 320px;
-      padding: 48px 40px;
-      border-right: 1px solid rgba(26,18,8,0.08);
-      position: relative;
-    }
-    .process-step:first-child { padding-left: 64px; }
-    .process-step-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 80px; font-weight: 900; font-style: italic;
-      color: rgba(26,18,8,0.05); line-height: 1;
-      margin-bottom: 20px;
-    }
-    .process-step-icon { font-size: 28px; margin-bottom: 16px; }
-    .process-step-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 24px; font-weight: 700;
-      color: var(--ink); margin-bottom: 12px;
-    }
-    .process-step-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px; color: var(--muted); line-height: 1.7;
-    }
-    .process-step-bar {
-      position: absolute; bottom: 0; left: 0;
-      height: 3px; width: 0;
-      background: var(--rose);
-      transition: width 0.6s var(--ease-out-expo);
-    }
-    .process-step:hover .process-step-bar { width: 100%; }
-
-    /* ============================================================
-       FEATURED CASE STUDY
-    ============================================================ */
-    #featured {
-      padding: 120px 64px;
-      background: var(--ink); color: var(--cream);
-      position: relative; overflow: hidden;
-    }
-    #featured .grain { opacity: 0.02; }
-
-    .featured-inner {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 80px; align-items: center;
-      margin-top: 64px;
-    }
-
-    .featured-logo-wrap {
-      margin-bottom: 28px;
-    }
-    .featured-logo-wrap img {
-      height: 48px; object-fit: contain;
-      filter: brightness(0) invert(1);
-    }
-
-    .featured-body {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px; line-height: 1.85;
-      color: rgba(245,240,232,0.6);
-      margin-bottom: 32px;
-    }
-    .featured-metrics {
-      display: flex; gap: 32px; margin-bottom: 36px;
-    }
-    .feat-metric-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 40px; font-weight: 900;
-      color: var(--rose); line-height: 1; margin-bottom: 4px;
-    }
-    .feat-metric-label {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
-      text-transform: uppercase; color: rgba(245,240,232,0.35);
-    }
-    .featured-tools {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px;
-    }
-    .feat-tool {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
-      text-transform: uppercase; color: rgba(245,240,232,0.5);
-      padding: 6px 14px;
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .featured-visuals {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .featured-img {
-      overflow: hidden; position: relative;
-    }
-    .featured-img:first-child { grid-column: span 2; }
-    .featured-img img {
-      width: 100%; aspect-ratio: 16/9;
-      object-fit: cover;
-      transition: transform 0.6s var(--ease-out-expo);
-    }
-    .featured-img:first-child img { aspect-ratio: 16/7; }
-    .featured-img:hover img { transform: scale(1.04); }
-
-    /* ============================================================
-       TESTIMONIALS
-    ============================================================ */
-    #testimonials { padding: 120px 64px; }
-
-    .testimonials-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 24px; margin-top: 64px;
-    }
-    .testimonial-card {
-      background: var(--card-bg);
-      padding: 36px 32px;
-      position: relative; overflow: hidden;
-      transition: transform 0.4s var(--ease-out-expo);
-    }
-    .testimonial-card:hover { transform: translateY(-4px); }
-    .testi-quote {
-      font-family: 'Playfair Display', serif;
-      font-size: 64px; font-weight: 900;
-      color: var(--rose); opacity: 0.25;
-      line-height: 0.5; margin-bottom: 20px;
-    }
-    .testi-text {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px; line-height: 1.75;
-      color: var(--ink); margin-bottom: 28px;
-      font-style: italic;
-    }
-    .testi-author {
-      display: flex; align-items: center; gap: 14px;
-      border-top: 1px solid rgba(26,18,8,0.08);
-      padding-top: 20px;
-    }
-    .testi-avatar {
-      width: 42px; height: 42px; border-radius: 50%;
-      background: var(--rose);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 18px; font-weight: 700; font-style: italic;
-      color: #fff; flex-shrink: 0;
-    }
-    .testi-name {
-      font-size: 14px; font-weight: 700; color: var(--ink);
-    }
-    .testi-role {
-      font-size: 11px; color: var(--muted); margin-top: 2px;
-    }
-
-    /* ============================================================
-       CLIENT LOGOS MARQUEE
-    ============================================================ */
-    #clients { padding: 80px 0; border-top: 1px solid rgba(26,18,8,0.06); }
-
-    .clients-label {
-      text-align: center; margin-bottom: 48px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .clients-marquee { overflow: hidden; }
-    .clients-track {
-      display: inline-flex; align-items: center; gap: 0;
-      animation: marqueeScroll 20s linear infinite;
-    }
-    .client-logo-item {
-      padding: 0 48px;
-      display: flex; align-items: center;
-    }
-    .client-logo-item img {
-      height: 36px; object-fit: contain;
-      filter: grayscale(100%); opacity: 0.4;
-      transition: opacity 0.3s, filter 0.3s;
-    }
-    .client-logo-item:hover img { opacity: 1; filter: none; }
-
-    /* ============================================================
-       CONTACT / FOOTER CTA
-    ============================================================ */
-    #contact {
-      padding: 140px 64px 100px;
-      background: var(--rose);
-      position: relative; overflow: hidden;
-      text-align: center;
-    }
-    .contact-bg-text {
-      position: absolute;
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(120px, 18vw, 260px);
-      font-weight: 900; font-style: italic;
-      color: rgba(255,255,255,0.06);
-      white-space: nowrap;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none; user-select: none;
-      letter-spacing: -0.03em;
-    }
-    .contact-eyebrow {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.28em;
-      text-transform: uppercase; color: rgba(255,255,255,0.6);
-      margin-bottom: 24px;
-    }
-    .contact-eyebrow::before {
-      content: ''; width: 24px; height: 1.5px;
-      background: rgba(255,255,255,0.5);
-    }
-    .contact-big {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(52px, 9vw, 120px);
-      font-weight: 900; line-height: 0.88;
-      letter-spacing: -0.04em; color: #fff;
-      margin-bottom: 40px;
-    }
-    .contact-big em { font-style: italic; }
-    .contact-email {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(18px, 2.5vw, 28px);
-      font-weight: 700; font-style: italic;
-      color: #fff; text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,0.4);
-      padding-bottom: 4px; display: inline-block;
-      margin-bottom: 52px;
-      transition: border-color 0.2s;
-    }
-    .contact-email:hover { border-color: #fff; }
-    .contact-socials {
-      display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
-    }
-    .social-btn {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.2em;
-      text-transform: uppercase; color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      padding: 13px 30px;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      transition: background 0.25s, color 0.25s, border-color 0.25s;
-    }
-    .social-btn:hover {
-      background: #fff; color: var(--rose); border-color: #fff;
-    }
-
-    /* ============================================================
-       FOOTER
-    ============================================================ */
-    footer {
-      background: var(--ink);
-      padding: 36px 64px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .footer-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px; font-weight: 900; font-style: italic;
-      color: var(--cream);
-    }
-    .footer-logo span { color: var(--rose); }
-    .footer-nav {
-      display: flex; gap: 32px; list-style: none;
-    }
-    .footer-nav a {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; color: rgba(245,240,232,0.35);
-      text-decoration: none; transition: color 0.2s;
-    }
-    .footer-nav a:hover { color: var(--cream); }
-    .footer-copy {
-      font-size: 10px; color: rgba(245,240,232,0.25);
-      letter-spacing: 0.1em;
-    }
-
-    /* ============================================================
-       FLOATING SHAPES
-    ============================================================ */
-    .float-shape {
-      position: absolute; pointer-events: none; user-select: none;
-    }
-
-    /* ============================================================
-       FANCYBOX OVERRIDES
-    ============================================================ */
-    .fancybox__content { background: transparent !important; box-shadow: none !important; }
-    .fancybox__backdrop { background: rgba(0,0,0,0.85) !important; }
-
-    /* ============================================================
-       MOBILE RESPONSIVE
-    ============================================================ */
-    @media (max-width: 1024px) {
-      #hero { grid-template-columns: 1fr; min-height: auto; }
-      .hero-right { min-height: 50vh; }
-      .hero-left { padding: 140px 32px 60px; }
-      nav { padding: 20px 32px; }
-      nav.scrolled { padding: 14px 32px; }
-      #work, #case-studies, #blog, #about, #skills, #testimonials, #contact, #process { padding-left: 32px; padding-right: 32px; }
-      .creatives-header, .process-header { padding-left: 32px; }
-      footer { padding: 28px 32px; }
-
-      .bento-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: auto; }
-      .bento-1, .bento-2, .bento-3, .bento-4, .bento-5, .bento-6 { grid-column: span 1; grid-row: span 1; }
-      .bento-thumb { height: 200px !important; }
-
-      .pdf-grid, .blog-grid, .testimonials-grid { grid-template-columns: 1fr 1fr; }
-      .featured-inner { grid-template-columns: 1fr; }
-      #about { grid-template-columns: 1fr; }
-      .skills-layout { grid-template-columns: 1fr; gap: 40px; }
-    }
-
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .bento-grid { grid-template-columns: 1fr; }
-      .pdf-grid, .blog-grid, .testimonials-grid { grid-template-columns: 1fr; }
-      .skills-cards { grid-template-columns: 1fr; }
-      .featured-visuals { grid-template-columns: 1fr; }
-      .featured-img:first-child { grid-column: span 1; }
-      .hero-stats { gap: 24px; }
-      .contact-big { font-size: 42px; }
-      footer { flex-direction: column; gap: 16px; text-align: center; }
-      .footer-nav { justify-content: center; }
-      .about-stats-row { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      /* *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      } */
-    }
-  </style>
 </head>
+
 <body>
 
   <!-- SCROLL PROGRESS -->
@@ -1295,7 +29,9 @@
   <!-- LOADER -->
   <div id="loader">
     <div class="loader-logo">H<span>.</span></div>
-    <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+    <div class="loader-bar-wrap">
+      <div class="loader-bar"></div>
+    </div>
   </div>
 
   <!-- CURSOR -->
@@ -1314,7 +50,7 @@
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <a href="#hero"  class="nav-cta">View Portfolio</a>
+    <a href="#hero" class="nav-cta">View Portfolio</a>
   </nav>
 
   <!-- ============================================================
@@ -1333,7 +69,8 @@
       <div class="hero-subtitle">Visual Designer &amp; Brand Storyteller</div>
 
       <p class="hero-desc">
-        Crafting memorable identities, digital experiences, and visual stories that connect people and brands — where every pixel has a purpose.
+        Crafting memorable identities, digital experiences, and visual stories that connect people and brands — where
+        every pixel has a purpose.
       </p>
 
       <div class="hero-actions">
@@ -1397,7 +134,7 @@
       <span class="item">UI Design</span><span class="marquee-dot">✦</span>
       <span class="item">Visual Design</span><span class="marquee-dot">✦</span>
       <span class="item">Illustration</span><span class="marquee-dot">✦</span>
-      <span class="item">Motion Design</span><span class="marquee-dot">✦</span>
+      <!-- <span class="item">Motion Design</span><span class="marquee-dot">✦</span> -->
       <span class="item">Creative Direction</span><span class="marquee-dot">✦</span>
       <span class="item">Packaging</span><span class="marquee-dot">✦</span>
       <span class="item">Digital Experiences</span><span class="marquee-dot">✦</span>
@@ -1406,7 +143,7 @@
       <span class="item">UI Design</span><span class="marquee-dot">✦</span>
       <span class="item">Visual Design</span><span class="marquee-dot">✦</span>
       <span class="item">Illustration</span><span class="marquee-dot">✦</span>
-      <span class="item">Motion Design</span><span class="marquee-dot">✦</span>
+      <!-- <span class="item">Motion Design</span><span class="marquee-dot">✦</span> -->
       <span class="item">Creative Direction</span><span class="marquee-dot">✦</span>
       <span class="item">Packaging</span><span class="marquee-dot">✦</span>
       <span class="item">Digital Experiences</span><span class="marquee-dot">✦</span>
@@ -1435,7 +172,8 @@
         <div class="bento-info">
           <div class="bento-cat">Brand Identity</div>
           <div class="bento-title">Creative Posts</div>
-          <div class="bento-desc">Developed a complete brand identity focused on trust, simplicity, and human-centered communication. Every element speaks care.</div>
+          <div class="bento-desc">Developed a complete brand identity focused on trust, simplicity, and human-centered
+            communication. Every element speaks care.</div>
           <div class="bento-tags">
             <span class="bento-tag">Illustrator</span>
             <span class="bento-tag">Photoshop</span>
@@ -1450,14 +188,16 @@
       <!-- Card 2 — Tall right -->
       <div class="bento-card bento-2" data-reveal>
         <div class="bento-thumb">
-          <img src="./assests/brand logo/Safe health logo.png" alt="Safe Health Logo" loading="lazy" style="object-fit:contain; background:#f5f5f5; padding:20px;" />
+          <img src="./assests/brand logo/Safe health logo.png" alt="Safe Health Logo" loading="lazy"
+            style="object-fit:contain; background:#f5f5f5; padding:20px;" />
           <div class="bento-overlay"></div>
         </div>
         <div class="bento-info">
           <div class="bento-cat">Logo Design</div>
           <div class="bento-title">Safe Health Identity</div>
           <div class="bento-desc">Clean, trusted healthcare logo — clarity that inspires confidence.</div>
-          <a href="./assests/brand logo/SAFE HEALTH LOGO FOR WEB (2).png" data-fancybox="bento-gallery" class="bento-link">
+          <a href="./assests/brand logo/SAFE HEALTH LOGO FOR WEB (2).png" data-fancybox="bento-gallery"
+            class="bento-link">
             View Project <span class="btn-arrow"></span>
           </a>
         </div>
@@ -1468,7 +208,8 @@
         <div class="bento-info" style="padding:24px;">
           <div class="bento-cat">Visual Design</div>
           <div class="bento-title">Healthcare Creative Campaigns</div>
-          <div class="bento-desc">A series of awareness campaigns spanning dengue, HMPV, norovirus, and mental wellness — visual communication that informs and empowers.</div>
+          <div class="bento-desc">A series of awareness campaigns spanning dengue, HMPV, norovirus, and mental wellness
+            — visual communication that informs and empowers.</div>
           <div class="bento-tags">
             <span class="bento-tag">Photoshop</span>
             <span class="bento-tag">Illustrator</span>
@@ -1540,7 +281,7 @@
   <section id="creatives">
     <div class="creatives-header" data-reveal>
       <div class="section-eyebrow">Creative Work</div>
-      <h2 class="section-h2">Visual <em>Creatives</em></h2>
+      <h2 class="section-h2">Website Handle <em>Creatives</em></h2>
     </div>
 
     <div class="swiper swiper-creatives" id="swiperCreatives">
@@ -1571,7 +312,7 @@
         </div>
         <div class="swiper-slide">
           <a href="./assests/Creatives-5.png" data-fancybox="creatives-gallery" class="creative-slide-inner">
-            <img src="./index.html" alt="Creative 5" loading="lazy" />
+            <img src="./assests/Creatives-5.png" alt="Creative 5" loading="lazy" />
             <span class="creative-num">05 / 08</span>
           </a>
         </div>
@@ -1637,13 +378,10 @@
         <div class="pdf-info">
           <div class="pdf-cat">Brand Collateral</div>
           <div class="pdf-title">Revalis Brand Brochure</div>
-          <div class="pdf-desc">A premium corporate brochure with refined layouts, editorial typography, and strategic visual storytelling — crafted to elevate brand presence.</div>
-          <a href="./assests/Brochures/revalis brochure.pdf"
-             data-fancybox
-             data-type="iframe"
-             data-width="900"
-             data-height="700"
-             class="pdf-open-btn">
+          <div class="pdf-desc">A premium corporate brochure with refined layouts, editorial typography, and strategic
+            visual storytelling — crafted to elevate brand presence.</div>
+          <a href="./assests/Brochures/revalis brochure.pdf" data-fancybox data-type="iframe" data-width="900"
+            data-height="700" class="pdf-open-btn">
             Open Brochure
             <span class="btn-arrow"></span>
           </a>
@@ -1665,13 +403,10 @@
         <div class="pdf-info">
           <div class="pdf-cat">UI / UX Design</div>
           <div class="pdf-title">Website Prototype</div>
-          <div class="pdf-desc">Full UX prototype showcasing information architecture, interaction design, and visual system — built for a modern digital product.</div>
-          <a href="./assests/website protoype/WEBSITE PROTOTYPE.pdf"
-             data-fancybox
-             data-type="iframe"
-             data-width="900"
-             data-height="700"
-             class="pdf-open-btn">
+          <div class="pdf-desc">Full UX prototype showcasing information architecture, interaction design, and visual
+            system — built for a modern digital product.</div>
+          <a href="./assests/website protoype/WEBSITE PROTOTYPE.pdf" data-fancybox data-type="iframe" data-width="900"
+            data-height="700" class="pdf-open-btn">
             View Prototype
             <span class="btn-arrow"></span>
           </a>
@@ -1693,13 +428,10 @@
         <div class="pdf-info">
           <div class="pdf-cat">Design Challenge</div>
           <div class="pdf-title">Frontend Technical Test</div>
-          <div class="pdf-desc">A comprehensive design and development assessment — demonstrating problem-solving, design system thinking, and front-end execution under constraints.</div>
-          <a href="./assests/website protoype/Theemwiz - Frontend Web Dev Technical Test.pdf"
-             data-fancybox
-             data-type="iframe"
-             data-width="900"
-             data-height="700"
-             class="pdf-open-btn">
+          <div class="pdf-desc">A comprehensive design and development assessment — demonstrating problem-solving,
+            design system thinking, and front-end execution under constraints.</div>
+          <a href="./assests/website protoype/Theemwiz - Frontend Web Dev Technical Test.pdf" data-fancybox
+            data-type="iframe" data-width="900" data-height="700" class="pdf-open-btn">
             Open Document
             <span class="btn-arrow"></span>
           </a>
@@ -1729,9 +461,10 @@
         <div class="blog-info">
           <div class="blog-cat">Healthcare Design</div>
           <div class="blog-title">Dengue Awareness Campaign</div>
-          <div class="blog-desc">Visual communication for healthcare education — how bold design can save lives when information reaches the right people.</div>
+          <div class="blog-desc">Visual communication for healthcare education — how bold design can save lives when
+            information reaches the right people.</div>
           <!-- <a href="#" class="blog-more">Read More <span class="btn-arrow"></span></a> -->
-           <a href="./assests/blog post/dengue.jpg" data-fancybox="bento-gallery" class="bento-link">
+          <a href="./assests/blog post/dengue.jpg" data-fancybox="bento-gallery" class="bento-link">
             View<span class="btn-arrow"></span>
           </a>
         </div>
@@ -1746,9 +479,10 @@
         <div class="blog-info">
           <div class="blog-cat">Information Design</div>
           <div class="blog-title">Child Healthcare Poster Series</div>
-          <div class="blog-desc">Designing information that parents understand instantly — a study in empathy-driven visual hierarchy and accessible design.</div>
+          <div class="blog-desc">Designing information that parents understand instantly — a study in empathy-driven
+            visual hierarchy and accessible design.</div>
           <!-- <a href="#" class="blog-more">Read More <span class="btn-arrow"></span></a> -->
-           <a href="./assests/blog post/bLOG 2 CHILD.jpg" data-fancybox="bento-gallery" class="bento-link">
+          <a href="./assests/blog post/bLOG 2 CHILD.jpg" data-fancybox="bento-gallery" class="bento-link">
             View<span class="btn-arrow"></span>
           </a>
         </div>
@@ -1756,16 +490,19 @@
 
       <div class="blog-card" data-reveal>
         <div class="blog-thumb">
-          <img src="./assests/blog post/meditation SAFE HEALTH BLOG CARD DESIGN_page-0001 (2).jpg" alt="Meditation Design" loading="lazy" />
+          <img src="./assests/blog post/meditation SAFE HEALTH BLOG CARD DESIGN_page-0001 (2).jpg"
+            alt="Meditation Design" loading="lazy" />
           <div class="blog-thumb-overlay"></div>
           <span class="blog-read-time">3 min read</span>
         </div>
         <div class="blog-info">
           <div class="blog-cat">Wellness & Mindfulness</div>
           <div class="blog-title">Meditation Awareness Campaign</div>
-          <div class="blog-desc">Minimal design promoting mental wellness — breathing space built into every composition, letting calm speak louder than noise.</div>
+          <div class="blog-desc">Minimal design promoting mental wellness — breathing space built into every
+            composition, letting calm speak louder than noise.</div>
           <!-- <a href="#" class="blog-more">Read More <span class="btn-arrow"></span></a> -->
-           <a href="./assests/blog post/meditation SAFE HEALTH BLOG CARD DESIGN_page-0001 (2).jpg" data-fancybox="bento-gallery" class="bento-link">
+          <a href="./assests/blog post/meditation SAFE HEALTH BLOG CARD DESIGN_page-0001 (2).jpg"
+            data-fancybox="bento-gallery" class="bento-link">
             View<span class="btn-arrow"></span>
           </a>
         </div>
@@ -1773,16 +510,19 @@
 
       <div class="blog-card" data-reveal>
         <div class="blog-thumb">
-          <img src="./assests/blog post/guillian barre safe health card_page-0001.jpg" alt="Cancer Awareness" loading="lazy" />
+          <img src="./assests/blog post/guillian barre safe health card_page-0001.jpg" alt="Cancer Awareness"
+            loading="lazy" />
           <div class="blog-thumb-overlay"></div>
           <span class="blog-read-time">5 min read</span>
         </div>
         <div class="blog-info">
           <div class="blog-cat">Awareness Campaign</div>
           <div class="blog-title">Cancer Awareness Design</div>
-          <div class="blog-desc">How visual storytelling can communicate hope, urgency, and action simultaneously — a delicate balance in sensitive health communication.</div>
+          <div class="blog-desc">How visual storytelling can communicate hope, urgency, and action simultaneously — a
+            delicate balance in sensitive health communication.</div>
           <!-- <a href="#" class="blog-more">Read More <span class="btn-arrow"></span></a> -->
-            <a href="./assests/blog post/guillian barre safe health card_page-0001.jpg" data-fancybox="bento-gallery" class="bento-link">
+          <a href="./assests/blog post/guillian barre safe health card_page-0001.jpg" data-fancybox="bento-gallery"
+            class="bento-link">
             View<span class="btn-arrow"></span>
           </a>
         </div>
@@ -1797,9 +537,11 @@
         <div class="blog-info">
           <div class="blog-cat">Public Health</div>
           <div class="blog-title">HMPV Awareness Card</div>
-          <div class="blog-desc">Rapid response design in public health — communicating urgency without creating panic through measured, clear visual language.</div>
+          <div class="blog-desc">Rapid response design in public health — communicating urgency without creating panic
+            through measured, clear visual language.</div>
           <!-- <a href="#" class="blog-more">Read More <span class="btn-arrow"></span></a> -->
-           <a href="./assests/blog post/hmpv similar to covid card_page-0001.jpg" data-fancybox="bento-gallery" class="bento-link">
+          <a href="./assests/blog post/hmpv similar to covid card_page-0001.jpg" data-fancybox="bento-gallery"
+            class="bento-link">
             View<span class="btn-arrow"></span>
           </a>
         </div>
@@ -1814,9 +556,11 @@
         <div class="blog-info">
           <div class="blog-cat">Public Health</div>
           <div class="blog-title">Norovirus Prevention Campaign</div>
-          <div class="blog-desc">Design as a preventative tool — creating visuals that stick in memory and drive behavioral change in everyday healthcare habits.</div>
+          <div class="blog-desc">Design as a preventative tool — creating visuals that stick in memory and drive
+            behavioral change in everyday healthcare habits.</div>
           <!-- <a href="#" class="blog-more">Read More <span class="btn-arrow"></span></a> -->
-           <a href="./assests/blog post/NOROVIRUS BLOG CARD_page-0001_11zon.jpg" data-fancybox="bento-gallery" class="bento-link">
+          <a href="./assests/blog post/NOROVIRUS BLOG CARD_page-0001_11zon.jpg" data-fancybox="bento-gallery"
+            class="bento-link">
             View<span class="btn-arrow"></span>
           </a>
         </div>
@@ -1835,27 +579,33 @@
       <div class="section-eyebrow">About Me</div>
       <h2 class="section-h2">Design is my language.<br><em>Stories</em> are my medium.</h2>
       <p class="about-body">
-        Hi, I'm <strong>Harshada</strong> — a visual designer with a passion for crafting experiences that are bold, intentional, and deeply human. I believe great design is <em>felt before it's understood.</em>
+        Hi, I'm <strong>Harshada</strong> — a visual designer with a passion for crafting experiences that are bold,
+        intentional, and deeply human. I believe great design is <em>felt before it's understood.</em>
         <br><br>
-        I work at the intersection of <strong>brand identity, UI design, and visual storytelling</strong> — helping brands find their voice and turn it into something unforgettable.
+        I work at the intersection of <strong>brand identity, UI design, and visual storytelling</strong> — helping
+        brands find their voice and turn it into something unforgettable.
       </p>
 
       <div class="timeline">
         <div class="timeline-item">
           <div class="timeline-year">2022</div>
-          <div class="timeline-text"><strong>Started Freelancing</strong> — took the leap into independent visual design practice</div>
+          <div class="timeline-text"><strong>Started Freelancing</strong> — took the leap into independent visual design
+            practice</div>
         </div>
         <div class="timeline-item">
           <div class="timeline-year">2023</div>
-          <div class="timeline-text"><strong>Healthcare Branding Projects</strong> — partnered with Safe Health on brand identity and campaign design</div>
+          <div class="timeline-text"><strong>Healthcare Branding Projects</strong> — partnered with Safe Health on brand
+            identity and campaign design</div>
         </div>
         <div class="timeline-item">
           <div class="timeline-year">2024</div>
-          <div class="timeline-text"><strong>Expanded into UI Design</strong> — brought visual design sensibility into full digital product experiences</div>
+          <div class="timeline-text"><strong>Expanded into UI Design</strong> — brought visual design sensibility into
+            full digital product experiences</div>
         </div>
         <div class="timeline-item">
           <div class="timeline-year">2025</div>
-          <div class="timeline-text"><strong>Visual Identity Consulting</strong> — advising brands on complete design systems and creative direction</div>
+          <div class="timeline-text"><strong>Visual Identity Consulting</strong> — advising brands on complete design
+            systems and creative direction</div>
         </div>
       </div>
 
@@ -1904,7 +654,8 @@
     <div class="skills-layout">
       <div data-reveal="left">
         <p class="skills-intro-text">
-          From brand systems to pixel-perfect interfaces — I bring ideas to life with craft, curiosity, and a healthy obsession with details. Every skill is a tool in service of the story.
+          From brand systems to pixel-perfect interfaces — I bring ideas to life with craft, curiosity, and a healthy
+          obsession with details. Every skill is a tool in service of the story.
         </p>
       </div>
 
@@ -1912,49 +663,66 @@
         <div class="skill-card">
           <div class="skill-card-icon">🎨</div>
           <div class="skill-card-name">Brand Identity</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="92"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="92"></div>
+          </div>
           <div class="skill-pct">92%</div>
         </div>
         <div class="skill-card">
           <div class="skill-card-icon">🖥</div>
           <div class="skill-card-name">UI / UX Design</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="88"></div>
+          </div>
           <div class="skill-pct">88%</div>
         </div>
         <div class="skill-card">
           <div class="skill-card-icon">✍️</div>
           <div class="skill-card-name">Typography</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="95"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="95"></div>
+          </div>
           <div class="skill-pct">95%</div>
         </div>
         <div class="skill-card">
           <div class="skill-card-icon">⚡</div>
           <div class="skill-card-name">Figma & Prototyping</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="90"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="90"></div>
+          </div>
           <div class="skill-pct">90%</div>
         </div>
-        <div class="skill-card">
+        <!-- * COMMENTED THE Motion & Animation -->
+        <!-- <div class="skill-card">
           <div class="skill-card-icon">🎬</div>
           <div class="skill-card-name">Motion & Animation</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="78"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="78"></div>
+          </div>
           <div class="skill-pct">78%</div>
-        </div>
+        </div> -->
         <div class="skill-card">
           <div class="skill-card-icon">✏️</div>
           <div class="skill-card-name">Illustration</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="82"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="82"></div>
+          </div>
           <div class="skill-pct">82%</div>
         </div>
         <div class="skill-card">
           <div class="skill-card-icon">📦</div>
           <div class="skill-card-name">Adobe Suite</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="93"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="93"></div>
+          </div>
           <div class="skill-pct">93%</div>
         </div>
         <div class="skill-card">
           <div class="skill-card-icon">🎯</div>
           <div class="skill-card-name">Creative Direction</div>
-          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="85"></div>
+          </div>
           <div class="skill-pct">85%</div>
         </div>
       </div>
@@ -1971,39 +739,44 @@
     </div>
 
     <div class="process-track" id="processTrack">
-      <div class="process-step">
+      <div class="process-step" data-reveal>
         <div class="process-step-num">01</div>
         <div class="process-step-icon">🔍</div>
         <div class="process-step-title">Discover</div>
-        <div class="process-step-desc">Understanding your world — your audience, competitors, ambitions, and the story you need to tell. Every great design begins with listening.</div>
+        <div class="process-step-desc">Understanding your world — your audience, competitors, ambitions, and the story
+          you need to tell. Every great design begins with listening.</div>
         <div class="process-step-bar"></div>
       </div>
-      <div class="process-step">
+      <div class="process-step" data-reveal>
         <div class="process-step-num">02</div>
         <div class="process-step-icon">📐</div>
         <div class="process-step-title">Research</div>
-        <div class="process-step-desc">Deep dives into market context, design references, and creative territories. Building the strategic foundation that makes design decisions feel inevitable.</div>
+        <div class="process-step-desc">Deep dives into market context, design references, and creative territories.
+          Building the strategic foundation that makes design decisions feel inevitable.</div>
         <div class="process-step-bar"></div>
       </div>
-      <div class="process-step">
+      <div class="process-step" data-reveal>
         <div class="process-step-num">03</div>
         <div class="process-step-icon">✏️</div>
         <div class="process-step-title">Design</div>
-        <div class="process-step-desc">Where ideas become visuals. Iterating across concepts, testing typography, color, form, and composition until something truly clicks.</div>
+        <div class="process-step-desc">Where ideas become visuals. Iterating across concepts, testing typography, color,
+          form, and composition until something truly clicks.</div>
         <div class="process-step-bar"></div>
       </div>
-      <div class="process-step">
+      <div class="process-step" data-reveal>
         <div class="process-step-num">04</div>
         <div class="process-step-icon">🖱</div>
         <div class="process-step-title">Prototype</div>
-        <div class="process-step-desc">Bringing static designs to life — interactive prototypes that let you feel the experience before a single line of code is written.</div>
+        <div class="process-step-desc">Bringing static designs to life — interactive prototypes that let you feel the
+          experience before a single line of code is written.</div>
         <div class="process-step-bar"></div>
       </div>
-      <div class="process-step">
+      <div class="process-step" data-reveal>
         <div class="process-step-num">05</div>
         <div class="process-step-icon">🚀</div>
         <div class="process-step-title">Deliver</div>
-        <div class="process-step-desc">Pixel-perfect assets, comprehensive design systems, and documentation that empowers teams to carry the vision forward with confidence.</div>
+        <div class="process-step-desc">Pixel-perfect assets, comprehensive design systems, and documentation that
+          empowers teams to carry the vision forward with confidence.</div>
         <div class="process-step-bar"></div>
       </div>
     </div>
@@ -2084,18 +857,21 @@
     <div class="testimonials-grid">
       <div class="testimonial-card" data-reveal>
         <div class="testi-quote">"</div>
-        <p class="testi-text">Harshada transformed our brand from a vague idea into a visual identity that our team — and our patients — instantly connected with. The care and intention in every detail was remarkable.</p>
+        <p class="testi-text">Harshada transformed our brand from a vague idea into a visual identity that our team —
+          and our patients — instantly connected with. The care and intention in every detail was remarkable.</p>
         <div class="testi-author">
           <div class="testi-avatar">R</div>
           <div>
-            <div class="testi-name">Rohan Mehta</div>
+            <!-- <div class="testi-name">Rohan Mehta</div> -->
             <div class="testi-role">Founder, Safe Health</div>
           </div>
         </div>
       </div>
       <div class="testimonial-card" data-reveal>
         <div class="testi-quote">"</div>
-        <p class="testi-text">Working with Harshada felt like having a creative partner who truly understood our mission. She didn't just design — she told our story through visuals in a way we never could have articulated ourselves.</p>
+        <p class="testi-text">Working with Harshada felt like having a creative partner who truly understood our
+          mission. She didn't just design — she told our story through visuals in a way we never could have articulated
+          ourselves.</p>
         <div class="testi-author">
           <div class="testi-avatar">P</div>
           <div>
@@ -2106,7 +882,9 @@
       </div>
       <div class="testimonial-card" data-reveal>
         <div class="testi-quote">"</div>
-        <p class="testi-text">The portfolio site prototype Harshada delivered exceeded every expectation. Her understanding of UX and visual design together created an experience that's both beautiful and genuinely functional.</p>
+        <p class="testi-text">The portfolio site prototype Harshada delivered exceeded every expectation. Her
+          understanding of UX and visual design together created an experience that's both beautiful and genuinely
+          functional.</p>
         <div class="testi-author">
           <div class="testi-avatar">A</div>
           <div>
@@ -2121,7 +899,9 @@
   <!-- ============================================================
        CLIENT LOGOS
   ============================================================ -->
-  <div id="clients">
+
+  <!-- * COMMENTED THE BELOW CODE IF NEEDED SIMPLY UNCOMMENT -->
+  <!-- <div id="clients">
     <div class="clients-label">Trusted by</div>
     <div class="clients-marquee">
       <div class="clients-track">
@@ -2131,7 +911,7 @@
         <div class="client-logo-item">
           <img src="assests/SAFE HEALTH LOGO FOR WEB (2).png" alt="Safe Health Web" />
         </div>
-        <!-- Duplicate for loop -->
+        
         <div class="client-logo-item">
           <img src="assests/Safe health logo.png" alt="Safe Health" />
         </div>
@@ -2152,7 +932,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- ============================================================
        CONTACT
@@ -2195,191 +975,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <script>
-  // ── LOADER ──────────────────────────────────────────────────────
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const loader = document.getElementById('loader');
-      loader.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
-      loader.style.opacity = '0';
-      loader.style.transform = 'translateY(-100%)';
-      setTimeout(() => loader.remove(), 700);
-    }, 1600);
-  });
-
-  // ── SCROLL PROGRESS ─────────────────────────────────────────────
-  const scrollBar = document.getElementById('scroll-progress');
-  window.addEventListener('scroll', () => {
-    const total = document.documentElement.scrollHeight - window.innerHeight;
-    scrollBar.style.width = (window.scrollY / total * 100) + '%';
-  }, { passive: true });
-
-  // ── NAVBAR SCROLL ───────────────────────────────────────────────
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 80);
-  }, { passive: true });
-
-  // ── ACTIVE NAV LINKS ────────────────────────────────────────────
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
-  const sectionObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        navLinks.forEach(a => {
-          a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
-        });
-      }
-    });
-  }, { threshold: 0.4 });
-  sections.forEach(s => sectionObserver.observe(s));
-
-  // ── CUSTOM CURSOR ───────────────────────────────────────────────
-  const dot  = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  let mx = 0, my = 0;
-
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.left  = mx + 'px';
-    dot.style.top   = my + 'px';
-    ring.style.left = mx + 'px';
-    ring.style.top  = my + 'px';
-  });
-
-  document.querySelectorAll('a, button, .bento-card, .blog-card, .pdf-card, .skill-card').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-  });
-
-  document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-  document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
-
-  // ── HERO PARALLAX ───────────────────────────────────────────────
-  const heroWrap = document.getElementById('heroImgWrap');
-  document.addEventListener('mousemove', e => {
-    if (!heroWrap) return;
-    const rx = (e.clientX / window.innerWidth  - 0.5) * 14;
-    const ry = (e.clientY / window.innerHeight - 0.5) * 10;
-    heroWrap.style.transform = `translateY(-8px) rotate(${rx * 0.15}deg) perspective(800px) rotateX(${-ry * 0.3}deg) rotateY(${rx * 0.3}deg)`;
-  });
-
-  // ── MAGNETIC BUTTONS ────────────────────────────────────────────
-  document.querySelectorAll('.mag-btn-wrap').forEach(wrap => {
-    const btn = wrap.querySelector('a');
-    wrap.addEventListener('mousemove', e => {
-      const r  = wrap.getBoundingClientRect();
-      const cx = r.left + r.width  / 2;
-      const cy = r.top  + r.height / 2;
-      const dx = (e.clientX - cx) * 0.28;
-      const dy = (e.clientY - cy) * 0.28;
-      btn.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
-    wrap.addEventListener('mouseleave', () => {
-      btn.style.transform = 'translate(0,0)';
-      btn.style.transition = 'transform 0.5s cubic-bezier(0.16,1,0.3,1)';
-    });
-  });
-
-  // ── REVEAL ON SCROLL ────────────────────────────────────────────
-  const revealEls = document.querySelectorAll('[data-reveal]');
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('revealed'), i * 70);
-        revealObs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  revealEls.forEach(el => revealObs.observe(el));
-
-  // ── SKILL BAR ANIMATION ─────────────────────────────────────────
-  const skillBars = document.querySelectorAll('.skill-bar-fill');
-  const skillObs  = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const w = e.target.dataset.width;
-        setTimeout(() => { e.target.style.width = w + '%'; }, 200);
-        skillObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.5 });
-  skillBars.forEach(b => skillObs.observe(b));
-
-  // ── MARQUEE DIRECTION REVERSAL ON SCROLL ────────────────────────
-  let lastSY = 0;
-  const marqueeTrack = document.getElementById('marqueeTrack');
-  window.addEventListener('scroll', () => {
-    const dy = window.scrollY - lastSY;
-    if (marqueeTrack) {
-      marqueeTrack.style.animationDirection = dy > 0 ? 'normal' : 'reverse';
-    }
-    lastSY = window.scrollY;
-  }, { passive: true });
-
-  // ── SWIPER ───────────────────────────────────────────────────────
-  const swiper = new Swiper('#swiperCreatives', {
-    slidesPerView: 'auto',
-    centeredSlides: true,
-    spaceBetween: 24,
-    loop: true,
-    autoplay: { delay: 3200, disableOnInteraction: false },
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true
-    },
-    grabCursor: true,
-    speed: 700,
-    effect: 'slide',
-  });
-  document.getElementById('prevBtn').addEventListener('click', () => swiper.slidePrev());
-  document.getElementById('nextBtn').addEventListener('click', () => swiper.slideNext());
-
-  // ── FANCYBOX ────────────────────────────────────────────────────
-  Fancybox.bind('[data-fancybox]', {
-    dragToClose: false,
-    animated: true,
-    showClass: 'fancybox-zoomInUp',
-    hideClass: 'fancybox-zoomOut',
-    Toolbar: { display: { left: ['infobar'], middle: [], right: ['close'] } }
-  });
-
-  // ── SMOOTH SCROLL ───────────────────────────────────────────────
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
-
-  // ── HERO STAT COUNT-UP ──────────────────────────────────────────
-  function animateCount(el, target, suffix) {
-    let start = 0;
-    const dur = 1600;
-    const step = timestamp => {
-      if (!start) start = timestamp;
-      const prog = Math.min((timestamp - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - prog, 4);
-      el.textContent = Math.floor(ease * target) + suffix;
-      if (prog < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
-
-  const statNums = document.querySelectorAll('.hero-stat-num');
-  const statObs  = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const count = parseInt(e.target.dataset.count);
-        animateCount(e.target, count, '+');
-        statObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.5 });
-  statNums.forEach(n => { if (n.dataset.count) statObs.observe(n); });
-  </script>
+  <!-- * CUSTOM SCRIPT -->
+   <script src="./script.js"></script>
 </body>
+
 </html>
